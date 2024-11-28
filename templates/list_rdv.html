@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Rendez-vous</title>
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Liste des Rendez-vous</h1>
+
+        <!-- Check if there are any rendez-vous -->
+        {% if rendezvous %}
+            <ul>
+                {% for rdv in rendezvous %}
+                    <li>
+                        <div class="rdv-info">
+                            <strong>{{ rdv.patient_name }}</strong><br>
+                            <p>Email: <span>{{ rdv.email }}</span></p>
+                            <p>Date: <span>{{ rdv.date }}</span></p>
+                            <p>Time: <span>{{ rdv.time }}</span></p>
+                            <p>Motif: <span>{{ rdv.motif }}</span></p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No rendez-vous found.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

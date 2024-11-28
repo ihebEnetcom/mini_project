@@ -1,0 +1,31 @@
+form{
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    background-color: #DCE2F0;
+    color: #50586C;
+    width: 50%;
+    align-items: center;
+}
+
+form *{
+    margin: 5px;
+    width: 75%;
+    color: #50586C;
+    
+}
+button{
+    background-color: #4caf50;
+    color:white;
+}
+.veritcal{
+    display: flex;
+    flex-direction: column;
+    
+}
+.veritcal *{
+    width: 100%;
+}

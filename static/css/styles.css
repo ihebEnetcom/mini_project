@@ -1,0 +1,99 @@
+/* General body styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #e6f7ff; /* Light blue background */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container for the content */
+.container {
+    background-color: #ffffff; /* White background for the content area */
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    width: 85%;
+    max-width: 950px;
+}
+
+/* Header style */
+h1 {
+    text-align: center;
+    color: #4CAF50; /* Green for the header */
+    margin-bottom: 30px;
+    font-size: 2em;
+}
+
+/* Style for the list */
+ul {
+    list-style: none;
+    padding: 0;
+    
+}
+
+li {
+    background-color: #f9fbe7; /* Light green background */
+    margin-bottom: 15px;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #c8e6c9; /* Light border */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+li:hover {
+    background-color: #e8f5e9; /* Slightly darker green on hover */
+    transform: scale(1.02);
+}
+
+/* Styling for the item content */
+.rdv-info {
+    font-size: 16px;
+    color: #333;
+    line-height: 1.8;
+}
+
+.rdv-info strong {
+    font-size: 18px;
+    color: #00796b; /* Deep green for the patient's name */
+}
+
+.rdv-info span {
+    color: #0288d1; /* Blue for other text like date/time */
+}
+
+/* Add some space between items */
+.rdv-info p {
+    margin: 10px 0;
+}
+
+/* Button styling */
+button {
+    background-color: #ff4081; /* Bright pink for buttons */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #f50057; /* Darker pink on hover */
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 15px;
+    }
+    h1 {
+        font-size: 1.5em;
+    }
+}
