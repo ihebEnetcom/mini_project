@@ -9,6 +9,7 @@ from werkzeug.utils import secure_filename
 from PIL import Image
 import os
 from flask_wtf.file import FileField, FileRequired, FileAllowed
+from flask import send_from_directory
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.config.set_visible_devices([], 'GPU')
@@ -108,6 +109,12 @@ def liste_rendezvous():
     connection.close()
     
     return render_template('list_rdv.html', rendezvous=rendezvous_list)
+
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
