@@ -17,12 +17,20 @@
                 {% for rdv in rendezvous %}
                     <li>
                         <div class="rdv-info">
-                            <strong>{{ rdv.patient_name }}</strong><br>
-                            <p>Email: <span>{{ rdv.email }}</span></p>
-                            <p>Date: <span>{{ rdv.date }}</span></p>
-                            <p>Time: <span>{{ rdv.time }}</span></p>
-                            <p>Motif: <span>{{ rdv.motif }}</span></p>
-                        </div>
+                            <div class="HStack">
+                                <div class="pationInfo">
+                                    <strong>{{ rdv.nom}}</strong><br>
+                                    <p>Email: <span>{{ rdv.email }}</span></p>
+                                    <p>Date: <span>{{ rdv.date }}</span></p>
+                                    <p>Time: <span>{{ rdv.heure }}</span></p>
+                                    <p>Motif: <span>{{ rdv.motif }}</span></p>
+                                </div >
+                                <div class="VStack">
+                                    <img src="{{ url_for('uploaded_file', filename=rdv.filename) }}" alt="something wrong">
+                                    <p>prediction: <span>{{rdv.predection}}</span></p>
+                                </div>
+                                </div>
+                            </div>
                     </li>
                 {% endfor %}
             </ul>
