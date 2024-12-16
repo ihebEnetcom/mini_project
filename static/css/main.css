@@ -1,53 +1,70 @@
+/* General styles */
 body {
     font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
 }
 
 .container {
     width: 80%;
-    margin: 20px auto;
+    max-width: 1200px;
+    margin: 50px auto;
     padding: 20px;
-    background-color: white;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
     color: #333;
 }
 
-.role-info {
-    text-align: center;
-    margin: 20px 0;
-}
-
-.role-info p {
-    font-size: 18px;
-    color: #555;
-}
-
-.button-group {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.btn {
-    background-color: #4CAF50;
+/* Role-based buttons */
+a.button {
+    display: inline-block;
+    background-color: #4CAF50; /* Green for main buttons */
     color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
+    padding: 12px 20px;
     text-decoration: none;
+    border-radius: 4px;
+    margin: 10px 5px;
+    text-align: center;
     font-size: 16px;
-    cursor: pointer;
+    width: 200px;
     transition: background-color 0.3s ease;
 }
 
-.btn:hover {
-    background-color: #45a049;
+a.button:hover {
+    background-color: #45a049; /* Slightly darker green */
+}
+
+/* Logout button */
+.logout-button {
+    display: inline-block;
+    background-color: #f44336; /* Red for logout */
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 20px;
+    text-align: center;
+    font-size: 16px;
+    width: 400px;
+    transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+    background-color: #e53935; /* Darker red on hover */
+    
+}
+
+/* Style for the buttons container */
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 20px;
 }

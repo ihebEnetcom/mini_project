@@ -3,30 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main Page</title>
-    <!-- Link to the main.css file -->
+    <title>Main Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-
-<div class="container">
-    <h1>Welcome, {{ session['username'] }}!</h1>
-    <div class="role-info">
-        <p>You are logged in as: <strong>{{ session['role'] }}</strong></p>
-    </div>
-
-    <div class="button-group">
+    <div class="container">
+        <div style="display: flex;justify-content: center;">
+        <h1>Welcome, {{ session['username'] }} ({{ session['role'] }})</h1>
+        </div>
+        <div style="display: flex;justify-content: center;">
         {% if session['role'] == 'admin' %}
-            <a href="/create-account" class="btn">Create Account</a>
-            <a href="/dashboard" class="btn">Dashboard</a>
-            <a href="/add-appointment" class="btn">Add Appointment</a>
+        <div class="buttons">
+            <a href="/create-account" class="button">Create Account</a>
+            <a href="/dashboard" class="button">Dashboard</a>
+            <a href="/add-appointment" class="button">Add Appointment</a>
         {% elif session['role'] == 'doctor' %}
-            <a href="/add-appointment" class="btn">Add Appointment</a>
+        <div class="buttons">
+            <a href="/liste-rendezvous" class="button">View Appointments</a>
         {% elif session['role'] == 'nurse' %}
-            <a href="/add-appointment" class="btn">Add Appointment</a>
+        <div class="buttons">
+            <a href="/add-appointment" class="button">Add Appointment</a>
+            <a href="/liste-rendezvous" class="button">View Appointments</a>
         {% endif %}
     </div>
-</div>
-
+    </div>
+        <!-- Logout Button -->
+    <div style="display: flex;justify-content: center;">
+        <form action="/logout" method="POST">
+            <button type="submit" class="button logout-button">Logout</button>
+        </form>
+    </div>
 </body>
 </html>

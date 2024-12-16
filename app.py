@@ -173,6 +173,14 @@ def create_account():
 
     return render_template('create_account.html')
 
+@app.route('/logout', methods=['POST'])
+def logout():
+    # Clear the session data
+    session.pop('username', None)
+    session.pop('role', None)
+    return redirect('/')  # Redirect to the login page
+
+
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
