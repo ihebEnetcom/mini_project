@@ -4,27 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Liste des Rendez-vous</title>
-    <!-- Link to external CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>Liste des Rendez-vous</h1>
 
- 
-        <!-- Filter dropdown menu in the corner -->
-<div class="filter-menu">
-    <form method="get" action="{{ url_for('liste_rendezvous') }}">
-        <label for="prediction">Filter by Prediction:</label>
-        <select name="prediction" id="prediction" class="prediction-select" onchange="this.form.submit()">
-            <option value="">All</option>
-            {% for prediction in predictions %}
-                <option value="{{ prediction }}" {% if request.args.get('prediction') == prediction %}selected{% endif %}>{{ prediction }}</option>
-            {% endfor %}
-        </select>
-    </form>
-</div>
+        <!-- Search Bar -->
+        <form method="get" action="{{ url_for('liste_rendezvous') }}" class="search-form">
+            <input type="text" name="search" placeholder="Rechercher par nom..." value="{{ search_query }}">
+            <input type="hidden" name="prediction" value="{{ prediction_filter }}">
+            <button type="submit">Rechercher</button>
+        </form>
 
+        <!-- Filter Dropdown Menu -->
+        <div class="filter-menu">
+            <form method="get" action="{{ url_for('liste_rendezvous') }}">
+                <label for="prediction">Filter by Prediction:</label>
+                <select name="prediction" id="prediction" class="prediction-select" onchange="this.form.submit()">
+                    <option value="All" {% if prediction_filter == 'All' or not prediction_filter %}selected{% endif %}>All</option>
+                    {% for prediction in predictions if prediction != 'All' %}
+                        <option value="{{ prediction }}" {% if prediction_filter == prediction %}selected{% endif %}>
+                            {{ prediction }}
+                        </option>
+                    {% endfor %}
+                </select>
+                <!-- Preserve the search query when filtering -->
+                <input type="hidden" name="search" value="{{ search_query }}">
+            </form>
+        </div>
 
         <!-- Check if there are any rendez-vous -->
         {% if rendezvous %}
@@ -34,14 +42,14 @@
                         <div class="rdv-info">
                             <div class="HStack">
                                 <div class="pationInfo">
-                                    <strong>{{ rdv.nom}}</strong><br>
+                                    <strong>{{ rdv.nom }}</strong><br>
                                     <p>Email: <span>{{ rdv.email }}</span></p>
                                     <p>Date: <span>{{ rdv.date }}</span></p>
                                     <p>Time: <span>{{ rdv.heure }}</span></p>
                                     <p>Motif: <span>{{ rdv.motif }}</span></p>
-                                </div >
+                                </div>
                                 <div class="VStack">
-                                    <img src="{{ url_for('uploaded_file', filename=rdv.filename) }}" alt="something wrong">
+                                    <img src="{{ url_for('uploaded_file', filename=rdv.filename) }}" alt="Image not available">
                                     <p>Prediction: <span>{{ rdv.predection }}</span></p>
                                 </div>
                             </div>

@@ -99,29 +99,41 @@ def add_appointment():
 
     return render_template('index.html',form=form)
 
-# Route pour afficher la liste des rendez-vous
-@app.route('/liste-rendezvous', methods=['GET', 'POST'])
+@app.route('/liste-rendezvous', methods=['GET'])
 def liste_rendezvous():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
     
-    # Get the prediction filter from the form
-    prediction_filter = request.args.get('prediction', None)
-    
-    # Modify the query to filter based on the prediction
-    if prediction_filter:
-        cursor.execute("SELECT * FROM rdv WHERE predection = %s", (prediction_filter,))
-    else:
-        cursor.execute("SELECT * FROM rdv")
+    # Get the prediction filter and search query from the request
+    prediction_filter = request.args.get('prediction', '')
+    search_query = request.args.get('search', '')
+
+    # Base query
+    query = "SELECT * FROM rdv WHERE 1=1"
+    params = []
+
+    # Add prediction filter if provided and not empty
+    if prediction_filter and prediction_filter != 'All':
+        query += " AND predection = %s"
+        params.append(prediction_filter)
+
+    # Add search filter if provided
+    if search_query:
+        query += " AND nom LIKE %s"
+        params.append(f"%{search_query}%")
+
+    # Execute the query with parameters
+    cursor.execute(query, tuple(params))
     
     rendezvous_list = cursor.fetchall()
     cursor.close()
     connection.close()
 
     # Get the available predictions for the dropdown
-    predictions = list(predection_map.values())
+    predictions = ['All'] + list(predection_map.values())
     
-    return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions)
+    return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions, search_query=search_query, prediction_filter=prediction_filter)
+
 
 
 @app.route('/uploads/<filename>')
