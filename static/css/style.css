@@ -1,31 +1,123 @@
-form{
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+/* General page styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    background-color: #DCE2F0;
-    color: #50586C;
-    width: 50%;
+    
     align-items: center;
+    height: 100vh;
 }
 
-form *{
-    margin: 5px;
-    width: 75%;
-    color: #50586C;
-    
+/* Header styling */
+h1 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
 }
-button{
-    background-color: #4caf50;
-    color:white;
+
+/* Form container styling */
+form {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px;
 }
-.veritcal{
+
+/* Style for each form label */
+label {
+    font-size: 1rem;
+    /*color: #065377;*/
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Input fields and text area styles */
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="time"],
+textarea,
+input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+
+/* Style for text area to handle multiple lines */
+textarea {
+    resize: vertical;
+    height: 150px;
+}
+
+/* Error message styling */
+span {
+    color: red;
+    font-size: 0.875rem;
+}
+
+/* Submit button styling */
+button[type="submit"] {
+    background-color: #107445;
+    color: white ;
+    padding: 10px;
+    border: none;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+button[type="submit"]:hover {
+    background-color: #095c35;
+    color: white;
+}
+
+/* Flexbox layout for centering */
+#appointment-form {
     display: flex;
     flex-direction: column;
-    
 }
-.veritcal *{
-    width: 100%;
+
+/* Style for the file upload input field */
+input[type="file"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Add space between form elements */
+div {
+    margin-bottom: 20px;
+}
+form div{
+    margin-bottom: 40px;
+}
+/* For better button layout and form padding */
+button[type="submit"] {
+    align-self: center;
+    margin-top: 20px;
+}
+
+/* Optional: Add a shadow effect for inputs and textarea when focused */
+input:focus, textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+#submitbutton{
+    background-color: #107445;
+    color: white;
+}
+.form_label{
+    color: #065377;
 }

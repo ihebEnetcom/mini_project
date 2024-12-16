@@ -11,6 +11,21 @@
     <div class="container">
         <h1>Liste des Rendez-vous</h1>
 
+ 
+        <!-- Filter dropdown menu in the corner -->
+<div class="filter-menu">
+    <form method="get" action="{{ url_for('liste_rendezvous') }}">
+        <label for="prediction">Filter by Prediction:</label>
+        <select name="prediction" id="prediction" class="prediction-select" onchange="this.form.submit()">
+            <option value="">All</option>
+            {% for prediction in predictions %}
+                <option value="{{ prediction }}" {% if request.args.get('prediction') == prediction %}selected{% endif %}>{{ prediction }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+
         <!-- Check if there are any rendez-vous -->
         {% if rendezvous %}
             <ul>
@@ -27,10 +42,10 @@
                                 </div >
                                 <div class="VStack">
                                     <img src="{{ url_for('uploaded_file', filename=rdv.filename) }}" alt="something wrong">
-                                    <p>prediction: <span>{{rdv.predection}}</span></p>
-                                </div>
+                                    <p>Prediction: <span>{{ rdv.predection }}</span></p>
                                 </div>
                             </div>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>

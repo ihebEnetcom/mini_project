@@ -25,9 +25,10 @@ def get_db_connection():
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
 app.config["UPLOAD_FOLDER"]="uploads"
-model = tf.keras.models.load_model('brain_tumor_model.h5',compile=False)
+model = tf.keras.models.load_model('my_model.keras',compile=False)
 model.summary()
 print('input shape is :',model.input_shape)
+predection_map={0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
 
 # Define the appointment form with validation
@@ -38,7 +39,7 @@ class AppointmentForm(FlaskForm):
     time = TimeField('Heure de rendez-vous', validators=[DataRequired()])
     motif = TextAreaField('Motif', validators=[Length(max=200)])
     image = FileField('Image', validators=[FileRequired('dont forget the image'),FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')],)  # Add this line for image upload
-    submit = SubmitField('Prendre rendez-vous')
+    submit = SubmitField('prendre rendez-vous')
 
 # Page d'accueil
 @app.route('/')
@@ -70,7 +71,7 @@ def add_appointment():
 
         file.save(file_path)
 
-        image = Image.open(file_path).resize((224,224))
+        image = Image.open(file_path).resize((150,150))
         image=np.array(image)/255.0
         image=np.expand_dims(image,axis=0)
         print(image.shape)
@@ -87,7 +88,7 @@ def add_appointment():
         cursor = connection.cursor()
         cursor.execute(
             "INSERT INTO rdv (nom, email, date, heure, motif,filename,predection) VALUES (%s, %s, %s, %s, %s,%s,%s)",
-            (nom, email, date, heur, motif,filename,int(predicted_class))
+            (nom, email, date, heur, motif,filename,predection_map[int(predicted_class)])
         )
         connection.commit()
         cursor.close()
@@ -99,16 +100,28 @@ def add_appointment():
     return render_template('index.html',form=form)
 
 # Route pour afficher la liste des rendez-vous
-@app.route('/liste-rendezvous')
+@app.route('/liste-rendezvous', methods=['GET', 'POST'])
 def liste_rendezvous():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM rdv")
+    
+    # Get the prediction filter from the form
+    prediction_filter = request.args.get('prediction', None)
+    
+    # Modify the query to filter based on the prediction
+    if prediction_filter:
+        cursor.execute("SELECT * FROM rdv WHERE predection = %s", (prediction_filter,))
+    else:
+        cursor.execute("SELECT * FROM rdv")
+    
     rendezvous_list = cursor.fetchall()
     cursor.close()
     connection.close()
+
+    # Get the available predictions for the dropdown
+    predictions = list(predection_map.values())
     
-    return render_template('list_rdv.html', rendezvous=rendezvous_list)
+    return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions)
 
 
 @app.route('/uploads/<filename>')
@@ -120,5 +133,3 @@ if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs(app.config["UPLOAD_FOLDER"])
     app.run(debug=True)
-
-#{'glioma': 0, 'meningioma': 1, 'notumor': 2, 'pituitary': 3}

@@ -77,7 +77,9 @@ li:hover {
 }
 .VStack{
     display: flex;
+    width: 200px;
     flex-direction: column;
+    align-items: center;
 }
 img{
     width: 100px;
@@ -99,6 +101,55 @@ button {
 button:hover {
     background-color: #f50057; /* Darker pink on hover */
 }
+
+/* Style the filter menu container */
+.filter-menu {
+    text-align: right; /* Align the menu to the right */
+    margin: 20px; /* Add some space around it */
+    
+}
+
+/* Style the label */
+.filter-menu label {
+    font-size: 16px;
+    margin-right: 10px;
+    color: #333;
+}
+
+/* Style the select dropdown */
+.prediction-select {
+    padding: 8px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Style the dropdown options */
+.prediction-select option {
+    padding: 10px;
+    background-color: #fff;
+    color: #333;
+}
+
+/* Change color of the select box when focused */
+.prediction-select:focus {
+    
+    background-color: #f8f9fa; /* Light grey background */
+}
+
+/* Hover effect on the select dropdown */
+.prediction-select:hover {
+    background-color: #c4d6e9;
+}
+
+/* Optional: Add a little shadow to the dropdown for better visibility */
+.prediction-select {
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 
 /* Responsive design */
 @media (max-width: 600px) {
