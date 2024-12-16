@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/makeAccount.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Create New Account</h1>
+    <form method="POST">
+        <div>
+            <label for="username">Username:</label>
+            <input type="text" name="username" id="username" required>
+        </div>
+        
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" name="password" id="password" required>
+        </div>
+
+        <div>
+            <label for="role">Role:</label>
+            <select name="role" id="role" required>
+                <option value="admin">Admin</option>
+                <option value="doctor">Doctor</option>
+                <option value="nurse">Nurse</option>
+            </select>
+        </div>
+
+        <button type="submit">Create Account</button>
+    </form>
+    <br>
+    <a href="{{ url_for('login') }}">Back to Main</a>
+</div>
+
+</body>
+</html>

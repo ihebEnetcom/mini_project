@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <!-- Link to the main.css file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <h1>Welcome, {{ session['username'] }}!</h1>
+    <div class="role-info">
+        <p>You are logged in as: <strong>{{ session['role'] }}</strong></p>
+    </div>
+
+    <div class="button-group">
+        {% if session['role'] == 'admin' %}
+            <a href="/create-account" class="btn">Create Account</a>
+            <a href="/dashboard" class="btn">Dashboard</a>
+            <a href="/add-appointment" class="btn">Add Appointment</a>
+        {% elif session['role'] == 'doctor' %}
+            <a href="/add-appointment" class="btn">Add Appointment</a>
+        {% elif session['role'] == 'nurse' %}
+            <a href="/add-appointment" class="btn">Add Appointment</a>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

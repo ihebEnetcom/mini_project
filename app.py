@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for,session
+from flask import Flask, render_template, request, redirect, flash, url_for, session
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, TimeField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
@@ -13,6 +13,8 @@ from flask import send_from_directory
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.config.set_visible_devices([], 'GPU')
+
+# Function to connect to MySQL database
 def get_db_connection():
     connection = mysql.connector.connect(
         host='localhost',
@@ -22,14 +24,14 @@ def get_db_connection():
     )
     return connection
 
+# Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
-app.config["UPLOAD_FOLDER"]="uploads"
-model = tf.keras.models.load_model('my_model.keras',compile=False)
+app.config["UPLOAD_FOLDER"] = "uploads"
+model = tf.keras.models.load_model('my_model.keras', compile=False)
 model.summary()
-print('input shape is :',model.input_shape)
-predection_map={0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
-
+print('Input shape is:', model.input_shape)
+prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
 # Define the appointment form with validation
 class AppointmentForm(FlaskForm):
@@ -38,129 +40,138 @@ class AppointmentForm(FlaskForm):
     date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()])
     time = TimeField('Heure de rendez-vous', validators=[DataRequired()])
     motif = TextAreaField('Motif', validators=[Length(max=200)])
-    image = FileField('Image', validators=[FileRequired('dont forget the image'),FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')],)  # Add this line for image upload
-    submit = SubmitField('prendre rendez-vous')
-
-# Dummy username and password for illustration purposes (replace with database logic in real-world scenarios)
-USER_CREDENTIALS = {
-    "username": "doctor123",  # Example username
-    "password": "password123"  # Example password
-}
+    image = FileField('Image', validators=[FileRequired('Dont forget the image'), FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
+    submit = SubmitField('Prendre rendez-vous')
 
 # Route for the login page
 @app.route('/', methods=['GET', 'POST'])
 def login():
     # If the user is already logged in, redirect to the appointment page
     if 'username' in session:
-        return redirect('/add-appointment')
+        return render_template('main.html')  # Render the main page if logged in
 
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
-        # Validate credentials
-        if username == USER_CREDENTIALS['username'] and password == USER_CREDENTIALS['password']:
-            # On successful login, store username in session and redirect to appointment page
+        # Check credentials in the database
+        connection = get_db_connection()
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM auth WHERE username = %s", (username,))
+        user = cursor.fetchone()
+
+        if user and user['password'] == password:  # Check password (you should use hashed passwords in real-world apps)
             session['username'] = username
-            return redirect('/add-appointment')  # Redirect to the appointment page
+            session['role'] = user['role']
+            return render_template('main.html')  # Render the main page if logged in
         else:
             # Show error message on failed login
             return render_template('login.html', error="Invalid username or password")
     
     return render_template('login.html')
 
-# Route pour ajouter un rendez-vous
+# Route for adding an appointment
 @app.route('/add-appointment', methods=['GET', 'POST'])
 def add_appointment():
-    print('test')
-    form =AppointmentForm(meta={'csrf': False})
-    print(form.validate_on_submit())
+    # Check if the user is logged in and has a role
+    if 'username' not in session:
+        return redirect('/')  # Redirect to login if not logged in
+    
+    form = AppointmentForm(meta={'csrf': False})
     if form.validate_on_submit():
-        # Get validated form data
+        # Get form data
         nom = form.patient_name.data
         email = form.email.data
         date = form.date.data
         heur = form.time.data
         motif = form.motif.data
-    else:
-        return render_template('index.html',form=form)
-        
-        
-    if form.image.data:
-        file = form.image.data
-        filename= secure_filename(file.filename)
-        file_path= os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
-        file.save(file_path)
+        if form.image.data:
+            file = form.image.data
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
 
-        image = Image.open(file_path).resize((150,150))
-        image=np.array(image)/255.0
-        image=np.expand_dims(image,axis=0)
-        print(image.shape)
-        prediction=model.predict(image)
-        print('prediction vector is:',prediction)
-        predicted_class=np.argmax(prediction)
-        print(predicted_class)
-      
+            image = Image.open(file_path).resize((150, 150))
+            image = np.array(image) / 255.0
+            image = np.expand_dims(image, axis=0)
+            prediction = model.predict(image)
+            predicted_class = np.argmax(prediction)
 
+            # Insert data into the database
+            connection = get_db_connection()
+            cursor = connection.cursor()
+            cursor.execute(
+                "INSERT INTO rdv (nom, email, date, heure, motif, filename, predection) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                (nom, email, date, heur, motif, filename, prediction_map[int(predicted_class)])
+            )
+            connection.commit()
+            cursor.close()
+            connection.close()
 
+            flash("Rendez-vous pris avec succès!", "success")
+            return redirect(url_for('index'))
 
-        # Insert data into the database
+    return render_template('index.html', form=form)
+
+# Route to view all rendezvous
+@app.route('/liste-rendezvous', methods=['GET'])
+def liste_rendezvous():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+
+    # Get the prediction filter and search query from the request
+    prediction_filter = request.args.get('prediction', '')
+    search_query = request.args.get('search', '')
+
+    query = "SELECT * FROM rdv WHERE 1=1"
+    params = []
+
+    if prediction_filter and prediction_filter != 'All':
+        query += " AND predection = %s"
+        params.append(prediction_filter)
+
+    if search_query:
+        query += " AND nom LIKE %s"
+        params.append(f"%{search_query}%")
+
+    cursor.execute(query, tuple(params))
+    rendezvous_list = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    predictions = ['All'] + list(prediction_map.values())
+
+    return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions, search_query=search_query, prediction_filter=prediction_filter)
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+@app.route('/create-account', methods=['GET', 'POST'])
+def create_account():
+    if request.method == 'POST':
+        # Get form data
+        username = request.form['username']
+        password = request.form['password']
+        role = request.form['role']
+
+        # Insert the new account data into the 'auth' table
         connection = get_db_connection()
         cursor = connection.cursor()
+
         cursor.execute(
-            "INSERT INTO rdv (nom, email, date, heure, motif,filename,predection) VALUES (%s, %s, %s, %s, %s,%s,%s)",
-            (nom, email, date, heur, motif,filename,predection_map[int(predicted_class)])
+            "INSERT INTO auth (username, password, role) VALUES (%s, %s, %s)",
+            (username, password, role)
         )
         connection.commit()
         cursor.close()
         connection.close()
 
-        flash("Rendez-vous pris avec succès!", "success")
-        return redirect(url_for('index'))
+        flash("Account created successfully!", "success")
+        return redirect('/')  # Redirect to the main page after account creation
 
-    return render_template('index.html',form=form)
-
-@app.route('/liste-rendezvous', methods=['GET'])
-def liste_rendezvous():
-    connection = get_db_connection()
-    cursor = connection.cursor(dictionary=True)
-    
-    # Get the prediction filter and search query from the request
-    prediction_filter = request.args.get('prediction', '')
-    search_query = request.args.get('search', '')
-
-    # Base query
-    query = "SELECT * FROM rdv WHERE 1=1"
-    params = []
-
-    # Add prediction filter if provided and not empty
-    if prediction_filter and prediction_filter != 'All':
-        query += " AND predection = %s"
-        params.append(prediction_filter)
-
-    # Add search filter if provided
-    if search_query:
-        query += " AND nom LIKE %s"
-        params.append(f"%{search_query}%")
-
-    # Execute the query with parameters
-    cursor.execute(query, tuple(params))
-    
-    rendezvous_list = cursor.fetchall()
-    cursor.close()
-    connection.close()
-
-    # Get the available predictions for the dropdown
-    predictions = ['All'] + list(predection_map.values())
-    
-    return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions, search_query=search_query, prediction_filter=prediction_filter)
-
-
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return render_template('create_account.html')
 
 
 if __name__ == '__main__':
