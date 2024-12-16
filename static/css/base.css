@@ -1,0 +1,123 @@
+/* General layout and styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 10px 0;
+    position:fixed;
+    top: 0;
+    width: 100%
+}
+
+header div {
+    display: flex;
+    justify-content: space-around; /* Space out the links */
+    align-items: center;
+    padding: 0 20px;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease;
+    background-color: #333;
+}
+
+header a:hover {
+    background-color: #555;
+    border-radius: 5px;
+}
+
+.container {
+    width: 80%;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}
+
+footer p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Additional styles for the content area */
+.container {
+    padding: 20px;
+    margin-top: 80px; /* To prevent overlap with the fixed header */
+}
+
+/* Styling for form inputs if you use any form inside the container */
+form input, form select, form button {
+    padding: 10px;
+    font-size: 16px;
+    margin: 10px 0;
+    width: 100%;
+    max-width: 400px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+form input[type="submit"] {
+    background-color: #28a745;
+    border: none;
+}
+
+form input[type="submit"]:hover {
+    background-color: #218838;
+}
+
+form button {
+    background-color: #dc3545;
+}
+
+form button:hover {
+    background-color: #c82333;
+}
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;  /* Ensure consistent column widths */
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ccc;
+    word-wrap: break-word;  /* Ensure text wraps to the next line */
+    overflow: hidden;  /* Prevent text from overflowing */
+    text-overflow: ellipsis;  /* Add ellipsis for very long text */
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+td {
+    max-width: 200px; /* Optional: Set a max-width for cells with long text */
+}
+
+

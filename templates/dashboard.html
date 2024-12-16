@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Dashboard</h1>
+
+    {% if appointments %}
+    <table class="table">
+        <thead>
+            <tr>
+                
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Date</th>
+                <th>Heure</th>
+                <th>Motif</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                
+                <td>{{ appointment.nom }}</td>
+                <td>{{ appointment.email }}</td>
+                <td>{{ appointment.date }}</td>
+                <td>{{ appointment.heure }}</td>
+                <td>{{ appointment.motif }}</td>
+                <td>
+                    <a href="{{ url_for('edit_appointment', id=appointment.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                    <form action="{{ url_for('delete_appointment', id=appointment.id) }}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No appointments found.</p>
+    {% endif %}
+</div>
+{% endblock %}

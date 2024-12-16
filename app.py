@@ -181,6 +181,72 @@ def logout():
     return redirect('/')  # Redirect to the login page
 
 
+# Route for the dashboard where admin can manage appointments
+@app.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM rdv")
+    appointments = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    return render_template('dashboard.html', appointments=appointments)
+
+# Route to edit an appointment
+@app.route('/edit-appointment/<int:id>', methods=['GET', 'POST'])
+def edit_appointment(id):
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    
+    # Fetch the appointment data
+    cursor.execute("SELECT * FROM rdv WHERE id = %s", (id,))
+    appointment = cursor.fetchone()
+    
+    if not appointment:
+        flash("Appointment not found.", "danger")
+        return redirect('/dashboard')
+
+    # If form is submitted
+    if request.method == 'POST':
+        nom = request.form['nom']
+        email = request.form['email']
+        date = request.form['date']
+        heur = request.form['heur']
+        motif = request.form['motif']
+        
+        # Update the appointment in the database
+        cursor.execute("""
+            UPDATE rdv SET nom = %s, email = %s, date = %s, heure = %s, motif = %s
+            WHERE id = %s
+        """, (nom, email, date, heur, motif, id))
+        connection.commit()
+
+        flash("Appointment updated successfully!", "success")
+        return redirect('/dashboard')
+
+    cursor.close()
+    connection.close()
+
+    return render_template('edit_appointment.html', appointment=appointment)
+
+# Route to delete an appointment
+@app.route('/delete-appointment/<int:id>', methods=['POST'])
+def delete_appointment(id):
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    # Delete the appointment from the database
+    cursor.execute("DELETE FROM rdv WHERE id = %s", (id,))
+    connection.commit()
+
+    cursor.close()
+    connection.close()
+
+    flash("Appointment deleted successfully!", "success")
+    return redirect('/dashboard')
+
+
 
 if __name__ == '__main__':
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
