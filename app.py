@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash, url_for
+from flask import Flask, render_template, request, redirect, flash, url_for,session
 from flask_wtf import FlaskForm
 from wtforms import StringField, DateField, TimeField, TextAreaField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
@@ -41,11 +41,33 @@ class AppointmentForm(FlaskForm):
     image = FileField('Image', validators=[FileRequired('dont forget the image'),FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')],)  # Add this line for image upload
     submit = SubmitField('prendre rendez-vous')
 
-# Page d'accueil
-@app.route('/')
-def index():
-    form =AppointmentForm(meta={'csrf': False})
-    return render_template('index.html',form=form)
+# Dummy username and password for illustration purposes (replace with database logic in real-world scenarios)
+USER_CREDENTIALS = {
+    "username": "doctor123",  # Example username
+    "password": "password123"  # Example password
+}
+
+# Route for the login page
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    # If the user is already logged in, redirect to the appointment page
+    if 'username' in session:
+        return redirect('/add-appointment')
+
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Validate credentials
+        if username == USER_CREDENTIALS['username'] and password == USER_CREDENTIALS['password']:
+            # On successful login, store username in session and redirect to appointment page
+            session['username'] = username
+            return redirect('/add-appointment')  # Redirect to the appointment page
+        else:
+            # Show error message on failed login
+            return render_template('login.html', error="Invalid username or password")
+    
+    return render_template('login.html')
 
 # Route pour ajouter un rendez-vous
 @app.route('/add-appointment', methods=['GET', 'POST'])
