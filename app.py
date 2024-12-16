@@ -11,6 +11,9 @@ import os
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from flask import send_from_directory
 
+from functools import wraps
+from flask import session, redirect, url_for, flash
+
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.config.set_visible_devices([], 'GPU')
 
@@ -43,6 +46,34 @@ class AppointmentForm(FlaskForm):
     image = FileField('Image', validators=[FileRequired('Dont forget the image'), FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
     submit = SubmitField('Prendre rendez-vous')
 
+
+
+
+def login_required(roles=None):
+    """
+    This decorator will check if the user is logged in and optionally check their role.
+    :param roles: List of roles (e.g., ['admin', 'doctor']). 
+                  If None, any logged-in user can access the route.
+    :return: Redirects to login page if the user is not authenticated or does not have the required role.
+    """
+    def decorator(func):
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            if 'username' not in session:
+                flash("Please log in to access this page.", "warning")
+                return redirect(url_for('login'))
+            
+            if roles and session.get('role') not in roles:
+                flash("You do not have the permission to access this page.", "danger")
+                return redirect(url_for('throwError'))  # Redirect to the main page or an appropriate page
+
+            return func(*args, **kwargs)
+        return wrapped
+    return decorator
+@app.route("/error",methods=['GET'])
+def throwError():
+    return render_template("error.html")
+
 # Route for the login page
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -72,6 +103,7 @@ def login():
 
 # Route for adding an appointment
 @app.route('/add-appointment', methods=['GET', 'POST'])
+@login_required(roles=['admin', 'nurse'])  
 def add_appointment():
     # Check if the user is logged in and has a role
     if 'username' not in session:
@@ -116,6 +148,7 @@ def add_appointment():
 
 # Route to view all rendezvous
 @app.route('/liste-rendezvous', methods=['GET'])
+@login_required(roles=['admin', 'nurse','doctor'])
 def liste_rendezvous():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
@@ -145,10 +178,12 @@ def liste_rendezvous():
     return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions, search_query=search_query, prediction_filter=prediction_filter)
 
 @app.route('/uploads/<filename>')
+@login_required(roles=['admin', 'nurse'])
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/create-account', methods=['GET', 'POST'])
+@login_required(roles=['admin'])  
 def create_account():
     if request.method == 'POST':
         # Get form data
@@ -174,6 +209,7 @@ def create_account():
     return render_template('create_account.html')
 
 @app.route('/logout', methods=['POST'])
+@login_required(roles=['admin', 'nurse','doctor'])  
 def logout():
     # Clear the session data
     session.pop('username', None)
@@ -183,6 +219,7 @@ def logout():
 
 # Route for the dashboard where admin can manage appointments
 @app.route('/dashboard', methods=['GET', 'POST'])
+@login_required(roles=['admin'])  
 def dashboard():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
@@ -195,6 +232,7 @@ def dashboard():
 
 # Route to edit an appointment
 @app.route('/edit-appointment/<int:id>', methods=['GET', 'POST'])
+@login_required(roles=['admin'])  
 def edit_appointment(id):
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
@@ -232,6 +270,7 @@ def edit_appointment(id):
 
 # Route to delete an appointment
 @app.route('/delete-appointment/<int:id>', methods=['POST'])
+@login_required(roles=['admin'])  
 def delete_appointment(id):
     connection = get_db_connection()
     cursor = connection.cursor()
