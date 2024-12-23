@@ -132,6 +132,7 @@ def add_appointment():
         return redirect('/')  # Redirect to login if not logged in
     
     form = AppointmentForm(meta={'csrf': False})
+    print('form data are :',form)
     if form.validate_on_submit():
         # Get form data
         nom = form.patient_name.data
@@ -171,7 +172,7 @@ def add_appointment():
             flash("Rendez-vous pris avec succès!", "success")
             return redirect(url_for('add_appointment'))
     else:
-        print('form validation error is :',form.errors)
+        print('form not validated ')
     return render_template('index.html', form=form)
 
 # Route to view all rendezvous
