@@ -2,6 +2,11 @@
 
 This project is a web-based application for managing hospital appointments (rendezvous) and includes an AI-powered brain tumor prediction feature. The application is built using Flask for the back end, HTML and CSS for the front end, and MySQL for database management via XAMPP.
 
+## Important Note
+
+This project has been built using **Python version 3.12.3**.  
+If you encounter any issues, especially with the AI model, please ensure you are using this version of Python.
+
 ## Features
 
 1. **Patient Management**:
