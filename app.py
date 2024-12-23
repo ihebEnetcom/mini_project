@@ -17,23 +17,44 @@ from flask import session, redirect, url_for, flash
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 tf.config.set_visible_devices([], 'GPU')
 
+import requests
+from werkzeug.utils import secure_filename
+
+
+def upload_to_imgbb(file):
+    url = "https://api.imgbb.com/1/upload"
+    API_KEY = 'f9024aa03b02c4c9ffa9d33f4e756e82'  # Replace with your ImgBB API key
+    files = {"image": file.read()}  # Read the file as binary data
+    params = {"key": API_KEY}
+    
+    response = requests.post(url, files=files, data=params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        
+        # Get the image URL from the response
+        file_url = data['data']['url']  # The direct URL of the uploaded image
+        
+        return file_url
+    else:
+        return None
+
+
+
 # Function to connect to MySQL database
 def get_db_connection():
     connection = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='',
-        database='rendez_vous'
+        host='sql207.infinityfree.com',
+        user='if0_37971523',
+        password='ipDFtir1loYITy8',
+        database='if0_37971523_rendez_vous'
     )
     return connection
 
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
-app.config["UPLOAD_FOLDER"] = "uploads"
 model = tf.keras.models.load_model('my_model.keras', compile=False)
-model.summary()
-print('Input shape is:', model.input_shape)
 prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
 # Define the appointment form with validation
@@ -120,12 +141,17 @@ def add_appointment():
 
         if form.image.data:
             file = form.image.data
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(file_path)
+            
 
-            image = Image.open(file_path).resize((150, 150))
+            file_url = upload_to_imgbb(file)
+            if not file_url:
+                flash("Failed to upload the image", "danger")
+                return redirect(url_for('add_appointment'))
+            
+
+            image = Image.open(file).resize((150, 150))
             image = np.array(image) / 255.0
+            
             image = np.expand_dims(image, axis=0)
             prediction = model.predict(image)
             predicted_class = np.argmax(prediction)
@@ -135,14 +161,14 @@ def add_appointment():
             cursor = connection.cursor()
             cursor.execute(
                 "INSERT INTO rdv (nom, email, date, heure, motif, filename, predection) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (nom, email, date, heur, motif, filename, prediction_map[int(predicted_class)])
+                (nom, email, date, heur, motif, file_url, prediction_map[int(predicted_class)])
             )
             connection.commit()
             cursor.close()
             connection.close()
 
             flash("Rendez-vous pris avec succès!", "success")
-            return redirect(url_for('index'))
+            return redirect(url_for('add_appointment'))
 
     return render_template('index.html', form=form)
 
@@ -177,10 +203,7 @@ def liste_rendezvous():
 
     return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions, search_query=search_query, prediction_filter=prediction_filter)
 
-@app.route('/uploads/<filename>')
-@login_required(roles=['admin', 'nurse'])
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 @app.route('/create-account', methods=['GET', 'POST'])
 @login_required(roles=['admin'])  
@@ -288,6 +311,5 @@ def delete_appointment(id):
 
 
 if __name__ == '__main__':
-   if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
-
+   
+   pass
