@@ -44,16 +44,17 @@ def upload_to_imgbb(file):
 # Function to connect to MySQL database
 def get_db_connection():
     connection = mysql.connector.connect(
-        host='sql207.infinityfree.com',
-        user='if0_37971523',
-        password='ipDFtir1loYITy8',
-        database='if0_37971523_rendez_vous'
+        host='sql5.freesqldatabase.com',
+        user='sql5753772',
+        password='Zsa7RDRmlC',
+        database='sql5753772'
     )
     return connection
 
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
+app.config['WTF_CSRF_ENABLED'] = False
 model = tf.keras.models.load_model('my_model.keras', compile=False)
 prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
@@ -125,12 +126,21 @@ def login():
 # Route for adding an appointment
 @app.route('/add-appointment', methods=['GET', 'POST'])
 @login_required(roles=['admin', 'nurse'])  
+
 def add_appointment():
     # Check if the user is logged in and has a role
     if 'username' not in session:
         return redirect('/')  # Redirect to login if not logged in
     
     form = AppointmentForm(meta={'csrf': False})
+    jsonstr1 = json.dumps(form.__dict__) 
+    print('form is:\n',jsonstr1)
+    print('form data are :')
+    print('nom :',form.patient_name.data)
+    print('form data are :',form.email.data)
+    print('form data are :',form.date.data)
+    print('form data are :',form.time.data)
+    print('image are :',form.image.data)
     if form.validate_on_submit():
         # Get form data
         nom = form.patient_name.data
@@ -169,7 +179,8 @@ def add_appointment():
 
             flash("Rendez-vous pris avec succès!", "success")
             return redirect(url_for('add_appointment'))
-
+    else:
+        print('form not validated ')
     return render_template('index.html', form=form)
 
 # Route to view all rendezvous
