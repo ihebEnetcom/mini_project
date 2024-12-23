@@ -54,6 +54,7 @@ def get_db_connection():
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
+app.config['WTF_CSRF_ENABLED'] = False
 model = tf.keras.models.load_model('my_model.keras', compile=False)
 prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
