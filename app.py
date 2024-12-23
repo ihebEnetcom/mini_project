@@ -169,7 +169,8 @@ def add_appointment():
 
             flash("Rendez-vous pris avec succès!", "success")
             return redirect(url_for('add_appointment'))
-
+    else:
+        print(form.errors)
     return render_template('index.html', form=form)
 
 # Route to view all rendezvous
