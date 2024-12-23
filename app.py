@@ -132,7 +132,12 @@ def add_appointment():
         return redirect('/')  # Redirect to login if not logged in
     
     form = AppointmentForm(meta={'csrf': False})
-    print('form data are :',form)
+    print('form data are :')
+    print('nom :',form.patient_name.data)
+    print('form data are :',form.email.data)
+    print('form data are :',form.date.data)
+    print('form data are :',form.time.data)
+    print('image are :',form.image.data)
     if form.validate_on_submit():
         # Get form data
         nom = form.patient_name.data
