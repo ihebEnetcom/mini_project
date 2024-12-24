@@ -133,14 +133,7 @@ def add_appointment():
         return redirect('/')  # Redirect to login if not logged in
     
     form = AppointmentForm(meta={'csrf': False})
-    jsonstr1 = json.dumps(form.__dict__) 
-    print('form is:\n',jsonstr1)
-    print('form data are :')
-    print('nom :',form.patient_name.data)
-    print('form data are :',form.email.data)
-    print('form data are :',form.date.data)
-    print('form data are :',form.time.data)
-    print('image are :',form.image.data)
+   
     if form.validate_on_submit():
         # Get form data
         nom = form.patient_name.data
@@ -179,8 +172,7 @@ def add_appointment():
 
             flash("Rendez-vous pris avec succès!", "success")
             return redirect(url_for('add_appointment'))
-    else:
-        print('form not validated ')
+    
     return render_template('index.html', form=form)
 
 # Route to view all rendezvous
