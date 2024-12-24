@@ -9,7 +9,7 @@
 <body>
     <div class="container">
         <div style="display: flex;justify-content: center;">
-        <h1>Welcome, {{ session['username'] }} ({{ session['role'] }})</h1>
+        <h1>Welcome, {{ session['username'] }}|role is :({{ session['role'] }})</h1>
         </div>
         <div style="display: flex;justify-content: center;">
         {% if session['role'] == 'admin' %}
