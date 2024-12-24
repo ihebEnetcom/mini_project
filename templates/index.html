@@ -1,76 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Prendre Rendez-vous</title>
-    <link rel="stylesheet" href="../static/css/style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="../static/css/style.css" />
+  </head>
+
+  <body style="display: flex; flex-direction: column">
+    <header style="width: 100%">
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 10px;
+          background-color: #333;
+          border-bottom: 2px solid #ddd;
+        "
+      >
+        <p style="margin: 0; font-size: 16px; font-weight: bold">
+          <a
+            href="{{ url_for('login') }}"
+            style="
+              text-decoration: none;
+              color: white;
+              padding: 5px 10px;
+              border-radius: 5px;
+              transition: background-color 0.3s;
+            "
+          >
+            Login
+          </a>
+        </p>
+        <p style="margin: 0; font-size: 16px; font-weight: bold">
+          <a
+            href="{{ url_for('dashboard') }}"
+            style="
+              text-decoration: none;
+              color: white;
+              padding: 5px 10px;
+              border-radius: 5px;
+              transition: background-color 0.3s;
+            "
+          >
+            Dashboard
+          </a>
+        </p>
+        <p style="margin: 0; font-size: 16px; font-weight: bold">
+          <a
+            href="{{ url_for('add_appointment') }}"
+            style="
+              text-decoration: none;
+              color: white;
+              padding: 5px 10px;
+              border-radius: 5px;
+              transition: background-color 0.3s;
+            "
+          >
+            Add Appointment
+          </a>
+        </p>
+        <p style="margin: 0; font-size: 16px; font-weight: bold">
+          <a
+            href="{{ url_for('logout') }}"
+            style="
+              text-decoration: none;
+              color: white;
+              padding: 5px 10px;
+              border-radius: 5px;
+              transition: background-color 0.3s;
+            "
+          >
+            Logout
+          </a>
+        </p>
+      </div>
+    </header>
+
     <div style="display: flex; justify-content: center">
-        <h1 style="font-weight: bold; font-family: 'Roboto', sans-serif;color: green;">
-            Bonjour docteur
-        </h1>
+      <h1
+        style="
+          font-weight: bold;
+          font-family: 'Roboto', sans-serif;
+          color: green;
+        "
+      >
+        Bonjour docteur
+      </h1>
     </div>
 
-    <form method="post" id="appointment-form" action="/add-appointment" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
+    <form
+      method="post"
+      id="appointment-form"
+      action="/add-appointment"
+      enctype="multipart/form-data"
+    >
+      {{ form.hidden_tag() }}
 
-        <div>
-            <label for="" class="form_label">{{ form.patient_name.label }}</label><br>
-            {{ form.patient_name(size=32,placeholder="Enter the patient's full name") }}<br>
-            {% for error in form.patient_name.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
+      <div>
+        <label for="" class="form_label">{{ form.patient_name.label }}</label
+        ><br />
+        {{ form.patient_name(size=32,placeholder="Enter the patient's full
+        name") }}<br />
+        {% for error in form.patient_name.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
 
-        <div>
-            <label  class="form_label">{{ form.email.label }}</label><br>
-            {{ form.email(size=32, placeholder="Enter your email address") }}<br>
-            {% for error in form.email.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
+      <div>
+        <label class="form_label">{{ form.email.label }}</label><br />
+        {{ form.email(size=32, placeholder="Enter your email address") }}<br />
+        {% for error in form.email.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
 
-        <div>
-            <label  class="form_label">{{ form.date.label }}</label><br>
-            {{ form.date(placeholder="Select the appointment date") }}<br>
-            {% for error in form.date.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
+      <div>
+        <label class="form_label">{{ form.date.label }}</label><br />
+        {{ form.date(placeholder="Select the appointment date") }}<br />
+        {% for error in form.date.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
 
-        <div>
-            <label  class="form_label">{{ form.time.label }}</label><br>
-            {{ form.time(placeholder="Select the appointment time") }}<br>
-            {% for error in form.time.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
+      <div>
+        <label class="form_label">{{ form.time.label }}</label><br />
+        {{ form.time(placeholder="Select the appointment time") }}<br />
+        {% for error in form.time.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
 
-        <div>
-            <label  class="form_label">{{ form.motif.label }}</label><br>
-            {{ form.motif(rows=4, cols=50, placeholder="Enter the reason for the appointment") }}
-            {% for error in form.motif.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </div>
-        <div>
-            <label  class="form_label">{{ form.image.label }}</label>
-            {{ form.image() }}  <!-- Render the file upload field -->
-            {% if form.image.errors %}
-                <ul>
-                    {% for error in form.image.errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+      <div>
+        <label class="form_label">{{ form.motif.label }}</label><br />
+        {{ form.motif(rows=4, cols=50, placeholder="Enter the reason for the
+        appointment") }} {% for error in form.motif.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+      <div>
+        <label class="form_label">{{ form.image.label }}</label>
+        {{ form.image() }}
+        <!-- Render the file upload field -->
+        {% if form.image.errors %}
+        <ul>
+          {% for error in form.image.errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
 
-        <button  type="submit">{{ form.submit.label }}</button>
+      <button type="submit">{{ form.submit.label }}</button>
     </form>
-
-</body>
-<script src="../static/js/script.js"></script>
-<script>console.log(form)</script>
+  </body>
+  <script src="../static/js/script.js"></script>
+  <script>
+    console.log(form);
+  </script>
 </html>
