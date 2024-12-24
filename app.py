@@ -126,6 +126,7 @@ def login():
 # Route for adding an appointment
 @app.route('/add-appointment', methods=['GET', 'POST'])
 @login_required(roles=['admin', 'nurse'])  
+@csrf.exempt
 def add_appointment():
     # Check if the user is logged in and has a role
     if 'username' not in session:
