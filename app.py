@@ -55,6 +55,7 @@ def get_db_connection():
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
 app.config['WTF_CSRF_ENABLED'] = False
+app.config["UPLOAD_FOLDER"] = "uploads"
 model = tf.keras.models.load_model('my_model.keras', compile=False)
 prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
@@ -144,17 +145,12 @@ def add_appointment():
 
         if form.image.data:
             file = form.image.data
-            
+            filename = secure_filename(file.filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(file_path)
 
-            file_url = upload_to_imgbb(file)
-            if not file_url:
-                flash("Failed to upload the image", "danger")
-                return redirect(url_for('add_appointment'))
-            
-
-            image = Image.open(file).resize((150, 150))
+            image = Image.open(file_path).resize((150, 150))
             image = np.array(image) / 255.0
-            
             image = np.expand_dims(image, axis=0)
             prediction = model.predict(image)
             predicted_class = np.argmax(prediction)
@@ -164,7 +160,7 @@ def add_appointment():
             cursor = connection.cursor()
             cursor.execute(
                 "INSERT INTO rdv (nom, email, date, heure, motif, filename, predection) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (nom, email, date, heur, motif, file_url, prediction_map[int(predicted_class)])
+                (nom, email, date, heur, motif, filename, prediction_map[int(predicted_class)])
             )
             connection.commit()
             cursor.close()
@@ -206,7 +202,10 @@ def liste_rendezvous():
 
     return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions, search_query=search_query, prediction_filter=prediction_filter)
 
-
+@app.route('/uploads/<filename>')
+@login_required(roles=['admin', 'nurse'])
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 @app.route('/create-account', methods=['GET', 'POST'])
 @login_required(roles=['admin'])  
@@ -314,5 +313,7 @@ def delete_appointment(id):
 
 
 if __name__ == '__main__':
+   if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config["UPLOAD_FOLDER"])
    app.run(debug=True)
    pass
