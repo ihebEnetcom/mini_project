@@ -21,25 +21,6 @@ import requests
 from werkzeug.utils import secure_filename
 
 
-def upload_to_imgbb(file):
-    url = "https://api.imgbb.com/1/upload"
-    API_KEY = 'f9024aa03b02c4c9ffa9d33f4e756e82'  # Replace with your ImgBB API key
-    files = {"image": file.read()}  # Read the file as binary data
-    params = {"key": API_KEY}
-    
-    response = requests.post(url, files=files, data=params)
-    
-    if response.status_code == 200:
-        data = response.json()
-        
-        # Get the image URL from the response
-        file_url = data['data']['url']  # The direct URL of the uploaded image
-        
-        return file_url
-    else:
-        return None
-
-
 
 # Function to connect to MySQL database
 def get_db_connection():
