@@ -1,16 +1,12 @@
 from flask import Flask, render_template, request, redirect, flash, url_for, session
-from flask_wtf import FlaskForm
-from wtforms import StringField, DateField, TimeField, TextAreaField, SubmitField
-from wtforms.validators import DataRequired, Email, Length
+
 import mysql.connector
 import tensorflow as tf
 import numpy as np
 from werkzeug.utils import secure_filename
 from PIL import Image
 import os
-from flask_wtf.file import FileField, FileRequired, FileAllowed
 from flask import send_from_directory
-
 from functools import wraps
 from flask import session, redirect, url_for, flash
 
@@ -58,15 +54,6 @@ app.config['WTF_CSRF_ENABLED'] = False
 model = tf.keras.models.load_model('my_model.keras', compile=False)
 prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
-# Define the appointment form with validation
-class AppointmentForm(FlaskForm):
-    patient_name = StringField('Nom', validators=[DataRequired(), Length(min=5, max=50)])
-    email = StringField('Email', validators=[DataRequired(), Email()])
-    date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()])
-    time = TimeField('Heure de rendez-vous', validators=[DataRequired()])
-    motif = TextAreaField('Motif', validators=[Length(max=200)])
-    image = FileField('Image', validators=[FileRequired('Dont forget the image'), FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
-    submit = SubmitField('Prendre rendez-vous')
 
 
 
@@ -131,49 +118,88 @@ def add_appointment():
     # Check if the user is logged in and has a role
     if 'username' not in session:
         return redirect('/')  # Redirect to login if not logged in
+    patient_name_error = None
+    email_error = None
+    date_error = None
+    time_error = None
+    motif_error = None
+    image_error = []
+
+    # Retrieve form data to preserve the entered values
+    patient_name = request.form.get('patient_name', '')
+    email = request.form.get('email', '')
+    date = request.form.get('date', '')
+    time = request.form.get('time', '')
+    motif = request.form.get('motif', '')
     
-    form = AppointmentForm(meta={'csrf': False})
-   
-    if form.validate_on_submit():
-        # Get form data
-        nom = form.patient_name.data
-        email = form.email.data
-        date = form.date.data
-        heur = form.time.data
-        motif = form.motif.data
+    if request.method == 'POST':
+        image = request.files.get('image')
+        # Validation
+        if not patient_name:
+            patient_name_error = 'Patient name is required.'
+        if not email or '@' not in email:
+            email_error = 'Invalid email address.'
+        if not date:
+            date_error = 'Date is required.'
+        if not time:
+            time_error = 'Time is required.'
+        if not motif:
+            motif_error = 'Motif is required.'
+        if image and not allowed_file(image.filename):
+            image_error.append('Invalid file type for image.')
 
-        if form.image.data:
-            file = form.image.data
-            
-
-            file_url = upload_to_imgbb(file)
+        # If no validation errors, process the form
+        if not any([patient_name_error, email_error, date_error, time_error, motif_error, image_error]):
+            # Save appointment to database, process the file, etc.
+            file_url = upload_to_imgbb(image)
             if not file_url:
                 flash("Failed to upload the image", "danger")
                 return redirect(url_for('add_appointment'))
-            
-
-            image = Image.open(file).resize((150, 150))
+            image = Image.open(image).resize((150, 150))
             image = np.array(image) / 255.0
-            
             image = np.expand_dims(image, axis=0)
             prediction = model.predict(image)
             predicted_class = np.argmax(prediction)
-
-            # Insert data into the database
             connection = get_db_connection()
             cursor = connection.cursor()
             cursor.execute(
                 "INSERT INTO rdv (nom, email, date, heure, motif, filename, predection) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                (nom, email, date, heur, motif, file_url, prediction_map[int(predicted_class)])
+                (patient_name, email, date, time, motif, file_url, prediction_map[int(predicted_class)])
             )
             connection.commit()
             cursor.close()
-            connection.close()
+            return render_template('index.html', 
+                           patient_name='',
+                           email='',
+                           date=None,
+                           time=None,
+                           motif='',
+                           patient_name_error=None,
+                           email_error=None,
+                           date_error=None,
+                           time_error=None,
+                           motif_error=None,
+                           image_error=None)
 
-            flash("Rendez-vous pris avec succès!", "success")
-            return redirect(url_for('add_appointment'))
-    
-    return render_template('index.html', form=form)
+    return render_template('index.html', 
+                           patient_name=patient_name,
+                           email=email,
+                           date=date,
+                           time=time,
+                           motif=motif,
+                           patient_name_error=patient_name_error,
+                           email_error=email_error,
+                           date_error=date_error,
+                           time_error=time_error,
+                           motif_error=motif_error,
+                           image_error=image_error)
+
+def allowed_file(filename):
+    # Check if the uploaded file is of an allowed type (e.g., jpg, png)
+    allowed_extensions = {'png', 'jpg', 'jpeg', 'gif'}
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
+
+
 
 # Route to view all rendezvous
 @app.route('/liste-rendezvous', methods=['GET'])
