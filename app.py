@@ -155,6 +155,7 @@ def add_appointment():
             if not file_url:
                 flash("Failed to upload the image", "danger")
                 return redirect(url_for('add_appointment'))
+            print('image uploaded')
             image = Image.open(image).resize((150, 150))
             image = np.array(image) / 255.0
             image = np.expand_dims(image, axis=0)
@@ -168,6 +169,7 @@ def add_appointment():
             )
             connection.commit()
             cursor.close()
+            print('connection closed')
             return render_template('index.html', 
                            patient_name='',
                            email='',
