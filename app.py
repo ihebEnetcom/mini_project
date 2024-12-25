@@ -44,10 +44,10 @@ def upload_to_imgbb(file):
 # Function to connect to MySQL database
 def get_db_connection():
     connection = mysql.connector.connect(
-        host='sql5.freesqldatabase.com',
-        user='sql5753772',
-        password='Zsa7RDRmlC',
-        database='sql5753772'
+        host='localhost',
+        user='root',
+        password='',
+        database='rendez_vous'
     )
     return connection
 
