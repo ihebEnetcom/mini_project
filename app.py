@@ -1,21 +1,13 @@
 from flask import Flask, render_template, request, redirect, flash, url_for, session
-
 import mysql.connector
 import tensorflow as tf
 import numpy as np
 from werkzeug.utils import secure_filename
 from PIL import Image
 import os
-from flask import send_from_directory
 from functools import wraps
-from flask import session, redirect, url_for, flash
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-tf.config.set_visible_devices([], 'GPU')
-
+import bcrypt
 import requests
-from werkzeug.utils import secure_filename
-
 
 def upload_to_imgbb(file):
     url = "https://api.imgbb.com/1/upload"
@@ -51,6 +43,7 @@ def get_db_connection():
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
 app.config['WTF_CSRF_ENABLED'] = False
+
 model = tf.keras.models.load_model('my_model.keras', compile=False)
 prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
@@ -100,7 +93,7 @@ def login():
         cursor.execute("SELECT * FROM auth WHERE username = %s", (username,))
         user = cursor.fetchone()
 
-        if user and user['password'] == password:  # Check password (you should use hashed passwords in real-world apps)
+        if user and bcrypt.checkpw(password.encode('utf-8'),user['password'].encode('utf-8')):  # Check password (you should use hashed passwords in real-world apps)
             session['username'] = username
             session['role'] = user['role']
             return render_template('main.html')  # Render the main page if logged in
@@ -244,14 +237,16 @@ def create_account():
         username = request.form['username']
         password = request.form['password']
         role = request.form['role']
-
+        if(role not in ['admin','doctor','nurse']):
+            return redirect("/error")
         # Insert the new account data into the 'auth' table
         connection = get_db_connection()
         cursor = connection.cursor()
-
+        hash=bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt())
+        hash_str=hash.decode('utf-8')
         cursor.execute(
             "INSERT INTO auth (username, password, role) VALUES (%s, %s, %s)",
-            (username, password, role)
+            (username,hash_str , role)
         )
         connection.commit()
         cursor.close()
@@ -343,4 +338,5 @@ def delete_appointment(id):
 
 if __name__ == '__main__':
    
-   pass
+    app.run(debug=True)
+    pass
