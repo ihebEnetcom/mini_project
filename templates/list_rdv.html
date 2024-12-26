@@ -51,7 +51,7 @@
 
 
 
-    <div class="container">
+    <div class="container" style="margin-top: 200px;">
         <h1>Liste des Rendez-vous</h1>
 
         <!-- Search Bar -->
@@ -75,6 +75,10 @@
                 </select>
                 <!-- Preserve the search query when filtering -->
                 <input type="hidden" name="search" value="{{ search_query }}">
+                <div>
+                    <label for="future_appointments">Show only future appointments:</label>
+                    <input type="checkbox" name="future_appointments" id="future_appointments" value="true" {% if future_appointments %}checked{% endif %} onchange="this.form.submit()">
+                </div>
             </form>
         </div>
 
