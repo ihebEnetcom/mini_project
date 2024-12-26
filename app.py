@@ -11,7 +11,7 @@ import requests
 
 def upload_to_imgbb(file):
     url = "https://api.imgbb.com/1/upload"
-    API_KEY = 'f9024aa03b02c4c9ffa9d33f4e756e82'  # Replace with your ImgBB API key
+    API_KEY = os.getenv("IMGBB_API_KEY")  
     files = {"image": file.read()}  # Read the file as binary data
     params = {"key": API_KEY}
     
@@ -32,16 +32,16 @@ def upload_to_imgbb(file):
 # Function to connect to MySQL database
 def get_db_connection():
     connection = mysql.connector.connect(
-        host='sql5.freesqldatabase.com',
-        user='sql5753772',
-        password='Zsa7RDRmlC',
-        database='sql5753772'
+        host=os.getenv('DB_HOST'),
+        user=os.getenv('DB_USER'),
+        password=os.getenv('DB_PASSWORD'),
+        database=os.getenv('DB_NAME')
     )
     return connection
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')  
 app.config['WTF_CSRF_ENABLED'] = False
 
 model = tf.keras.models.load_model('my_model.keras', compile=False)
