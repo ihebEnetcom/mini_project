@@ -15,24 +15,24 @@ from functools import wraps
 import bcrypt
 import requests
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
 
-
-
+load_dotenv()
 # Function to connect to MySQL database
 def get_db_connection():
     connection = mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='',
-        database='rendez_vous'
+         host=os.getenv('MYSQL_HOST'),
+        user=os.getenv('MYSQL_USER'),
+        password=os.getenv('MYSQL_PASSWORD'),
+        database=os.getenv('MYSQL_DATABASE')
     )
     return connection
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a strong secret key
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')  
 app.config['WTF_CSRF_ENABLED'] = False
-app.config["UPLOAD_FOLDER"] = "uploads"
+app.config["UPLOAD_FOLDER"] = os.getenv('UPLOAD_FOLDER')
 model = tf.keras.models.load_model('my_model.keras', compile=False)
 prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
