@@ -133,7 +133,7 @@ def add_appointment():
     motif = request.form.get('motif', '')
     
     if request.method == 'POST':
-        image = request.files.get('image')
+        image= request.files['image']
         # Validation
         if not patient_name:
             patient_name_error = 'Patient name is required.'
@@ -182,7 +182,7 @@ def add_appointment():
                            time_error=None,
                            motif_error=None,
                            image_error=None)
-
+    
     return render_template('index.html', 
                            patient_name=patient_name,
                            email=email,
