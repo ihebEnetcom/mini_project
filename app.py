@@ -16,14 +16,14 @@ import bcrypt
 import requests
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-
+from datetime import datetime
 load_dotenv()
 # Function to connect to MySQL database
 def get_db_connection():
     connection = mysql.connector.connect(
          host=os.getenv('MYSQL_HOST'),
         user=os.getenv('MYSQL_USER'),
-        password=os.getenv('MYSQL_PASSWORD'),
+        password='',#os.getenv('MYSQL_PASSWORD'),
         database=os.getenv('MYSQL_DATABASE')
     )
     return connection
@@ -158,7 +158,7 @@ def liste_rendezvous():
     # Get the prediction filter and search query from the request
     prediction_filter = request.args.get('prediction', '')
     search_query = request.args.get('search', '')
-
+    future_appointments = request.args.get('future_appointments', 'false') == 'true'
     query = "SELECT * FROM rdv WHERE 1=1"
     params = []
 
@@ -170,6 +170,13 @@ def liste_rendezvous():
         query += " AND nom LIKE %s"
         params.append(f"%{search_query}%")
 
+     # Filter by future appointments if the checkbox is checked
+    if future_appointments:
+        current_datetime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Current date and time
+        query += " AND CONCAT(date, ' ', heure) > %s"
+        params.append(current_datetime)
+
+    query += " ORDER BY date, heure"
     cursor.execute(query, tuple(params))
     rendezvous_list = cursor.fetchall()
     cursor.close()
@@ -177,7 +184,7 @@ def liste_rendezvous():
 
     predictions = ['All'] + list(prediction_map.values())
 
-    return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions, search_query=search_query, prediction_filter=prediction_filter)
+    return render_template('list_rdv.html', rendezvous=rendezvous_list, predictions=predictions, search_query=search_query, prediction_filter=prediction_filter,future_appointments=future_appointments)
 
 @app.route('/uploads/<filename>')
 @login_required(roles=['admin', 'nurse'])
