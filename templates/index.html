@@ -33,25 +33,46 @@
             Home
           </a>
         </p>
-
-        <p style="margin: 0; font-size: 16px; font-weight: bold">
-          <a
-            href="{{ url_for('logout') }}"
+        <form
+          action="/logout"
+          method="POST"
+          style="
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            height: auto;
+            width: auto;
+            background-color: #333;
+            box-shadow: none;
+            padding: 5px;
+          "
+        >
+          <p style="color: white">log out</p>
+          <button
             style="
-              text-decoration: none;
+              margin-left: 5px;
+              background-color: rgb(31, 22, 153);
               color: white;
-              padding: 5px 10px;
-              border-radius: 5px;
-              transition: background-color 0.3s;
+              border: none;
+              border-radius: 100%;
+              width: 25px;
+              height: 25px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              margin-top: 0px;
             "
+            type="submit"
+            class="button logout-button"
           >
-            Logout
-          </a>
-        </p>
+            x
+          </button>
+        </form>
       </div>
     </header>
 
-    <div style="display: flex; justify-content: center; margin-top: 50px">
+    <div style="display: flex; justify-content: center; margin-top: 200px">
       <h1
         style="
           font-weight: bold;

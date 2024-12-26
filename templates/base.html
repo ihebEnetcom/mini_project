@@ -14,7 +14,32 @@
       <div style="display: flex; justify-content: space-between">
         <p><a href="{{ url_for('login') }}">Home</a></p>
 
-        <p><a href="{{ url_for('logout') }}">Logout</a></p>
+        <form
+          action="/logout"
+          method="POST"
+          style="display: flex; align-items: center"
+        >
+          <p>log out</p>
+          <button
+            style="
+              margin-left: 5px;
+              background-color: rgb(31, 22, 153);
+              color: white;
+              border: none;
+              border-radius: 100%;
+              width: 25px;
+              height: 25px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+            "
+            type="submit"
+            class="button logout-button"
+          >
+            x
+          </button>
+        </form>
       </div>
     </header>
 
