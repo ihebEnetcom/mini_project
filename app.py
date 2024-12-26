@@ -12,11 +12,7 @@ from flask_wtf.file import FileField, FileRequired, FileAllowed
 from flask import send_from_directory
 
 from functools import wraps
-from flask import session, redirect, url_for, flash
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-tf.config.set_visible_devices([], 'GPU')
-
+import bcrypt
 import requests
 from werkzeug.utils import secure_filename
 
@@ -95,7 +91,7 @@ def login():
         cursor.execute("SELECT * FROM auth WHERE username = %s", (username,))
         user = cursor.fetchone()
 
-        if user and user['password'] == password:  # Check password (you should use hashed passwords in real-world apps)
+        if user and bcrypt.checkpw(password.encode('utf-8'),user['password'].encode('utf-8')):  # Check password (you should use hashed passwords in real-world apps)
             session['username'] = username
             session['role'] = user['role']
             return render_template('main.html')  # Render the main page if logged in
@@ -196,14 +192,16 @@ def create_account():
         username = request.form['username']
         password = request.form['password']
         role = request.form['role']
-
+        if(role not in ['admin','doctor','nurse']):
+            return redirect("/error")
         # Insert the new account data into the 'auth' table
         connection = get_db_connection()
         cursor = connection.cursor()
-
+        hash=bcrypt.hashpw(password.encode('utf-8'),bcrypt.gensalt())
+        hash_str=hash.decode('utf-8')
         cursor.execute(
             "INSERT INTO auth (username, password, role) VALUES (%s, %s, %s)",
-            (username, password, role)
+            (username,hash_str , role)
         )
         connection.commit()
         cursor.close()
