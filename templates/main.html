@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
 </head>
 <body>
-    <div class="container">
+    <div class="container" >
         <div style="display: flex;justify-content: space-between;align-items: center; margin-left: 20px;margin-right: 20px;">
             
                 <h1 style="margin-right: 10px;">Welcome, {{ session['username'] }}</h1>
@@ -35,7 +35,7 @@
     </div>
     </div>
         <!-- Logout Button -->
-    <div style="display: flex;justify-content: center;">
+    <div style="display: flex;justify-content: center;margin-top: 50px;">
         <form action="/logout" method="POST">
             <button type="submit" class="button logout-button">Logout</button>
         </form>

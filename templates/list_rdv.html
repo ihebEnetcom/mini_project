@@ -16,11 +16,33 @@
                 </a>
             </p>
             
-            <p style="margin: 0; font-size: 16px; font-weight: bold;">
-                <a href="{{ url_for('logout') }}" style="text-decoration: none; color: white; padding: 5px 10px; border-radius: 5px; transition: background-color 0.3s;">
-                    Logout
-                </a>
-            </p>
+            <form
+          action="/logout"
+          method="POST"
+          style="display: flex; align-items: center; flex-direction: row"
+        >
+          <p style="color: white">log out</p>
+          <button
+            style="
+              margin-left: 5px;
+              background-color: rgb(31, 22, 153);
+              color: white;
+              border: none;
+              border-radius: 100%;
+              width: 25px;
+              height: 25px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              margin-top: 0px;
+            "
+            type="submit"
+            class="button logout-button"
+          >
+            x
+          </button>
+        </form>
         </div>
         
     
