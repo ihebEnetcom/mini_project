@@ -38,13 +38,13 @@ prediction_map = {0: 'glioma', 1: 'meningioma', 2: 'notumor', 3: 'pituitary'}
 
 # Define the appointment form with validation
 class AppointmentForm(FlaskForm):
-    patient_name = StringField('Nom', validators=[DataRequired(), Length(min=5, max=50)])
+    patient_name = StringField('Name', validators=[DataRequired(), Length(min=5, max=50)])
     email = StringField('Email', validators=[DataRequired(), Email()])
     date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()])
-    time = TimeField('Heure de rendez-vous', validators=[DataRequired()])
-    motif = TextAreaField('Motif', validators=[Length(max=200)])
+    time = TimeField('Appointment time', validators=[DataRequired()])
+    motif = TextAreaField('Reason', validators=[Length(max=200)])
     image = FileField('Image', validators=[FileRequired('Dont forget the image'), FileAllowed(['jpg', 'jpeg', 'png'], 'Images only!')])
-    submit = SubmitField('Prendre rendez-vous')
+    submit = SubmitField('Make an appointment')
 
 
 
