@@ -90,93 +90,61 @@
       action="/add-appointment"
       enctype="multipart/form-data"
     >
-      <div>
-        <label for="patient_name" class="form_label">Patient Name</label><br />
-        <input
-          type="text"
-          name="patient_name"
-          id="patient_name"
-          size="32"
-          placeholder="Enter the patient's full name"
-          value="{{ patient_name }}"
-        /><br />
-        {% if patient_name_error %}
-        <span style="color: red">[{{ patient_name_error }}]</span>
-        {% endif %}
-      </div>
+      {{ form.hidden_tag() }}
 
       <div>
-        <label for="email" class="form_label">Email</label><br />
-        <input
-          type="email"
-          name="email"
-          id="email"
-          size="32"
-          placeholder="Enter your email address"
-          value="{{ email }}"
-        /><br />
-        {% if email_error %}
-        <span style="color: red">[{{ email_error }}]</span>
-        {% endif %}
-      </div>
-
-      <div>
-        <label for="date" class="form_label">Date</label><br />
-        <input
-          type="date"
-          name="date"
-          id="date"
-          placeholder="Select the appointment date"
-          value="{{ date }}"
-        /><br />
-        {% if date_error %}
-        <span style="color: red">[{{ date_error }}]</span>
-        {% endif %}
-      </div>
-
-      <div>
-        <label for="time" class="form_label">Time</label><br />
-        <input
-          type="time"
-          name="time"
-          id="time"
-          placeholder="Select the appointment time"
-          value="{{ time }}"
-        /><br />
-        {% if time_error %}
-        <span style="color: red">[{{ time_error }}]</span>
-        {% endif %}
-      </div>
-
-      <div>
-        <label for="motif" class="form_label">Reason</label><br />
-        <textarea
-          name="motif"
-          id="motif"
-          rows="4"
-          cols="50"
-          placeholder="Enter the reason for the appointment"
-        >
-{{ motif }}</textarea
+        <label for="" class="form_label">{{ form.patient_name.label }}</label
         ><br />
-        {% if motif_error %}
-        <span style="color: red">[{{ motif_error }}]</span>
-        {% endif %}
+        {{ form.patient_name(size=32,placeholder="Enter the patient's full
+        name") }}<br />
+        {% for error in form.patient_name.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
       </div>
 
       <div>
-        <label for="image" class="form_label">Image</label><br />
-        <input type="file" name="image" id="image" /><br />
-        {% if image_error %}
+        <label class="form_label">{{ form.email.label }}</label><br />
+        {{ form.email(size=32, placeholder="Enter your email address") }}<br />
+        {% for error in form.email.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+      <div>
+        <label class="form_label">{{ form.date.label }}</label><br />
+        {{ form.date(placeholder="Select the appointment date") }}<br />
+        {% for error in form.date.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+
+      <div>
+        <label class="form_label">{{ form.time.label }}</label><br />
+        {{ form.time(placeholder="Select the appointment time") }}<br />
+        {% for error in form.time.errors %}
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+
+      <div>
+        <label class="form_label">{{ form.motif.label }}</label><br />
+        {{ form.motif(rows=4, cols=50, placeholder="Enter the reason for the
+        appointment") }} {% for error in form.motif.errors %}^M
+        <span style="color: red">[{{ error }}]</span>
+        {% endfor %}
+      </div>
+      <div>
+        <label class="form_label">{{ form.image.label }}</label>
+        {{ form.image() }}
+        <!-- Render the file upload field -->
+        {% if form.image.errors %}
         <ul>
-          {% for error in image_error %}
+          {% for error in form.image.errors %}
           <li>{{ error }}</li>
           {% endfor %}
         </ul>
         {% endif %}
       </div>
-
-      <button type="submit">Submit</button>
+      <button type="submit">{{ form.submit.label }}</button>
     </form>
   </body>
   <script src="../static/js/script.js"></script>
