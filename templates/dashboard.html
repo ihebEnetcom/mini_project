@@ -4,11 +4,30 @@
 <div class="container">
     <h1>Dashboard</h1>
 
+    <div style="display: flex;justify-content: space-between">
+        <!-- Search Bar -->
+        <form method="get" action="{{ url_for('dashboard') }}" class="form-inline mb-3" style="display: flex;">
+            <input
+                type="text"
+                name="search"
+                placeholder="Search by name..."
+                class="form-control mr-2"
+                value="{{ search_query }}">
+            <button type="submit"  class="btn btn-primary">Search</button>
+        
+        </form>
+        <!-- Clear Past Appointments -->
+        <form method="post" action="{{ url_for('dashboard') }}" style="display: inline;">
+            <input type="hidden" name="clear_past" value="true">
+            <button type="submit" class="btn btn-danger">Clear Past Appointments</button>
+        </form>
+    </div>
+
+    <!-- Appointments Table -->
     {% if appointments %}
-    <table class="table">
+    <table class="table mt-3">
         <thead>
             <tr>
-                
                 <th>Nom</th>
                 <th>Email</th>
                 <th>Date</th>
@@ -20,14 +39,13 @@
         <tbody>
             {% for appointment in appointments %}
             <tr>
-                
                 <td>{{ appointment.nom }}</td>
                 <td>{{ appointment.email }}</td>
                 <td>{{ appointment.date }}</td>
                 <td>{{ appointment.heure }}</td>
                 <td>{{ appointment.motif }}</td>
                 <td>
-                    <a href="{{ url_for('edit_appointment', id=appointment.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                  <a href="{{ url_for('edit_appointment', id=appointment.id) }}" style="color: white; text-decoration: none; font-size: 16px;background-color: green;border-radius: 5px;display: inline-block; padding: 5px 15px;" >Edit</a>
                     <form action="{{ url_for('delete_appointment', id=appointment.id) }}" method="POST" style="display:inline;">
                         <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                     </form>

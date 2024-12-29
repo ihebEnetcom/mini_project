@@ -234,12 +234,28 @@ def logout():
 def dashboard():
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM rdv")
+    
+    # Clear past appointments
+    if request.method == 'POST' and 'clear_past' in request.form:
+        cursor.execute("DELETE FROM rdv WHERE date < CURDATE()")
+        connection.commit()
+    # Get search query from the request
+    search_query = request.args.get('search', '').strip()
+
+    # SQL query: filter by name or fetch all if no search query
+    if search_query:
+        cursor.execute("SELECT * FROM rdv WHERE nom LIKE %s", (f"%{search_query}%",))
+    else:
+        cursor.execute("SELECT * FROM rdv")
+    
     appointments = cursor.fetchall()
+
+
     cursor.close()
     connection.close()
 
-    return render_template('dashboard.html', appointments=appointments)
+    return render_template('dashboard.html', appointments=appointments, search_query=search_query)
+
 
 # Route to edit an appointment
 @app.route('/edit-appointment/<int:id>', methods=['GET', 'POST'])
