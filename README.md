@@ -1,5 +1,5 @@
 
-# Hospital Rendezvous Management System
+# BrainCare Appointment Manager
 
 This project is a web-based application for managing hospital appointments (rendezvous) and includes an AI-powered brain tumor prediction feature. The application is built using Flask for the back end, HTML and CSS for the front end, and MySQL for database management via XAMPP.
 
