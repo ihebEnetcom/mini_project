@@ -96,30 +96,18 @@ CREATE TABLE auth (
    cd mini_project
    ```
 
-2. **Set Up the Database**:
-
-   - Open XAMPP and start Apache and MySQL.
-   - Create a database named `rendez_vous` in phpMyAdmin.
-   - Create a table named `rdv` with the following structure:
-     ```sql
-     CREATE TABLE rdv (
-       id INT AUTO_INCREMENT PRIMARY KEY,
-       nom TEXT,
-       email TEXT,
-       date DATE,
-       heure TIME,
-       motif TEXT,
-       filename TEXT,
-       predection TEXT
-     );
-     ```
-   - Create the `auth` table for user authentication as shown above.
-
-3. **Install Dependencies**:
+2. **Install Dependencies**:
 
    ```bash
    pip install -r requirements.txt
    ```
+
+3. **Set Up the Database**:
+   To initialize the database and create the necessary tables (rdv and auth), and also create an admin account, run the following Python script:
+```bash
+   python databaseInit.py
+```
+
 
 4. **Run the Application**:
 
