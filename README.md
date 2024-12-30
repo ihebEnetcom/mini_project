@@ -4,7 +4,10 @@ This project is a web-based application for managing hospital appointments (rend
 
 ## Important Note
 
-This project has been built using **Python version 3.12.3**. If you encounter any issues, especially with the AI model, please ensure you are using this version of Python.
+- This project has been built using **Python version 3.12.3**. If you encounter any issues, especially with the AI model, please ensure you are using this version of Python.
+
+- If you need an image for AI-based prediction (e.g., for appointment-related cases), please refer to the following dataset:
+https://www.kaggle.com/datasets/masoudnickparvar/brain-tumor-mri-dataset.
 
 ## Features
 
